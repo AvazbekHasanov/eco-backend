@@ -122,6 +122,8 @@ transportRouter.get('/get_service', async (req, res) => {
 });
 
 
+// salom
+
 transportRouter.get('/regions', async (req, res) => {
   try {
     const { region_id } = req.query;
