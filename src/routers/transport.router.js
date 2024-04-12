@@ -20,7 +20,7 @@ const transportRouter = Router();
 transportRouter.use(bodyParser.json({limit: '10000000mb'}));
 
 
-transportRouter.get('/' ,(res , req) => {
+transportRouter.get('/' ,(req , res) => {
   res.status(200).send(
       {
         message: "Ishladi sex"
