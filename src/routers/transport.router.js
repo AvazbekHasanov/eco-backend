@@ -101,9 +101,9 @@ transportRouter.get('/all_services', async (req, res) => {
     const result = await pool.query(query);
 
     if (result.rows.length > 0) {
-      res.status(200).json({ message: 'successful', services: result.rows });
+      res.status(200).send({ message: 'successful', services: result.rows });
     } else {
-      res.status(200).json({ message: 'not found' , services: []});
+      res.status(200).send({ message: 'not found' , services: []});
     }
   } catch (error) {
     console.error('Error during region retrieval:', error);
