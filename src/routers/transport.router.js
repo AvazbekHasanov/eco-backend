@@ -9,10 +9,10 @@ const {Pool} = pkg;
 
 
 const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'postgres',
-  password: 'avazbek0003',
+  user: 'ioofgkja',
+  host: 'snuffleupagus.db.elephantsql.com',
+  database: 'ioofgkja',
+  password: '3krp76icZWDmV1lAegNoSvxBLV7OCZin',
   port: 5432, // Default PostgreSQL port
 });
 
