@@ -20,6 +20,14 @@ const transportRouter = Router();
 transportRouter.use(bodyParser.json({limit: '10000000mb'}));
 
 
+transportRouter.get('/' ,(res , req) => {
+  res.status(200).send(
+      {
+        message: "Ishladi sex"
+      }
+  )
+})
+
 async function hash_password(password) {
   const {rows} = await pool.query('SELECT digest($1, \'sha256\') as hash', [password]);
   return rows[0].hash;
