@@ -3,7 +3,7 @@ import bodyParser from 'body-parser';
 import {GETTRANSPORT} from "../services/transport.service.js";
 import middleware from "../middlewares/jwt.middleware.js";
 import pkg from 'pg';
-import * as knex from "express";
+import moment from 'moment';
 
 const {Pool} = pkg;
 
@@ -112,17 +112,22 @@ transportRouter.get('/all_services', async (req, res) => {
   }
 });
 
-transportRouter.post('/connect/service', async (req, res) => {
+transportRouter.post('/connect_service', async (req, res) => {
   try {
+    console.log("req.body", req.body);
+    console.log("req.query", req.query);
     const { user_id, day } = req.body;
-    let query = 'INSERT INTO waste_traffics_log(org_id, begin_date, end_date) VALUES ($1,NOW(),NOW() + INTERVAL \'1 DAY\'*$2);'
+    let query = 'INSERT INTO waste_traffics_log(org_id, begin_date, end_date) VALUES ($1, NOW(), NOW() + INTERVAL \'1 DAY\'*$2) RETURNING *;';
     const result = await pool.query(query, [user_id, day]);
-    res.status(200).send({ message: 'Log inserted successfully' });
+    const insertedRow = result.rows[0]; // Assuming only one row is inserted
+    insertedRow.begin_date = moment(insertedRow.begin_date).format('DD-MM-YYYY')
+    insertedRow.end_date = moment(insertedRow.end_date).format('DD-MM-YYYY')
+    res.status(200).send({ message: 'SUCCESS', data: insertedRow });
   } catch (error) {
-    console.error('Error during insertion of waste traffic log:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({message: 'ERROR', error: error.message });
   }
 });
+
 
 
 transportRouter.get('/get_service', async (req, res) => {
