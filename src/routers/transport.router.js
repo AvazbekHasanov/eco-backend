@@ -130,6 +130,7 @@ transportRouter.post('/connect_service', async (req, res) => {
 
 
 
+
 transportRouter.get('/get_service', async (req, res) => {
   try {
     const { id } = req.query;
@@ -149,7 +150,23 @@ transportRouter.get('/get_service', async (req, res) => {
 });
 
 
-// salom
+transportRouter.get('/get_user_service', async (req, res) => {
+  try {
+    const { id } = req.query;
+    const query = 'select id, org_id, begin_date, end_date, state  from waste_traffics_log where org_id = $1 and state = 1';
+
+    const result = await pool.query(query, [id]);
+
+    if (result.rows.length > 0) {
+      res.status(200).json({ message: 'successful', info: result.rows[0] });
+    } else {
+      res.status(200).json({ message: 'not found' , info: []});
+    }
+  } catch (error) {
+    console.error('Error during region retrieval:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
 transportRouter.get('/regions', async (req, res) => {
   try {
