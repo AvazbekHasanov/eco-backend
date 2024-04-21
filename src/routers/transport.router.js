@@ -116,9 +116,9 @@ transportRouter.post('/connect_service', async (req, res) => {
   try {
     console.log("req.body", req.body);
     console.log("req.query", req.query);
-    const { user_id, day } = req.body;
-    let query = 'INSERT INTO waste_traffics_log(org_id, begin_date, end_date) VALUES ($1, NOW(), NOW() + INTERVAL \'1 DAY\'*$2) RETURNING *;';
-    const result = await pool.query(query, [user_id, day]);
+    const { user_id, day, service_id } = req.body;
+    let query = 'INSERT INTO waste_traffics_log(org_id, begin_date, end_date, service_id) VALUES ($1, NOW(), NOW() + INTERVAL \'1 DAY\'*$2, $3) RETURNING *;';
+    const result = await pool.query(query, [user_id, day, service_id]);
     const insertedRow = result.rows[0]; // Assuming only one row is inserted
     insertedRow.begin_date = moment(insertedRow.begin_date).format('DD-MM-YYYY')
     insertedRow.end_date = moment(insertedRow.end_date).format('DD-MM-YYYY')
