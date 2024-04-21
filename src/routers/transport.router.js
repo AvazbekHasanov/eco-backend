@@ -113,6 +113,8 @@ transportRouter.get('/all_services', async (req, res) => {
 
 transportRouter.post('/connect_service', async (req, res) => {
     try {
+        console.log("req.body", req.body);
+        console.log("req.query", req.query);
         const {user_id, day, service_id} = req.body;
         let query = 'INSERT INTO waste_traffics_log(org_id, begin_date, end_date, service_id) VALUES ($1, NOW(), NOW() + INTERVAL \'1 DAY\'*$2, $3::integer) RETURNING *;';
         const result = await pool.query(query, [user_id, day, service_id]);
@@ -130,16 +132,14 @@ transportRouter.get('/get_service', async (req, res) => {
     try {
         const {id, user_id} = req.query;
         const query = 'SELECT id, name, price, unit, description FROM services WHERE state = 1 AND id = $1 ORDER BY id';
-        const oldSevice = 'select case when count(id)>0 then true else false end\n' +
-            'from waste_traffics_log where org_id = :p and state = 1 and end_date > now()'
-
+        const oldServices = 'select case when count(id)>0 then true else false end\n' +
+            'from waste_traffics_log where org_id = $1 and state = 1 and end_date > now()'
         const result = await pool.query(query, [id]);
-        const oldRes = await pool.query(oldSevice, [user_id])
-
+        const resActiveServices = await pool.query(oldServices, [user_id]);
         if (result.rows.length > 0) {
-            res.status(200).json({message: 'successful',have_active_service: oldRes.rows[0], service_info: result.rows[0]});
+            res.status(200).json({message: 'successful', service_info: result.rows[0], have_old_services: resActiveServices.rows[0]});
         } else {
-            res.status(200).json({message: 'not found', service_info: [], have_active_service: oldRes.rows[0]});
+            res.status(200).json({message: 'not found', service_info: [], have_old_services: resActiveServices.rows[0]});
         }
     } catch (error) {
         console.error('Error during region retrieval:', error);
@@ -151,7 +151,7 @@ transportRouter.get('/get_service', async (req, res) => {
 transportRouter.get('/get_user_service', async (req, res) => {
     try {
         const {id} = req.query;
-        const query = 'select l.id, org_id,s.name, begin_date, end_date, l.service_id\n' +
+        const query = 'select l.id, org_id, begin_date, end_date, l.service_id\n' +
             'from waste_traffics_log l\n' +
             'left join services s on l.service_id = s.id and l.state = 1\n' +
             'where org_id = $1\n' +
@@ -224,7 +224,6 @@ transportRouter.post('/login', async (req, res) => {
     try {
         const {username} = req.body;
         const query = 'SELECT * FROM auth_users WHERE username = $1';
-        console.log("username", username, "req.query", req.query, "req.body", req.body);
         const result = await pool.query(query, [username]);
 
         if (result.rows.length > 0) {
