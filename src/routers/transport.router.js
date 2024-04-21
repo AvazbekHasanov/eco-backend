@@ -151,7 +151,7 @@ transportRouter.get('/get_service', async (req, res) => {
 transportRouter.get('/get_user_service', async (req, res) => {
     try {
         const {id} = req.query;
-        const query = 'select l.id, org_id, s.name begin_date, end_date, l.service_id\n' +
+        const query = 'select l.id, org_id, s.name ,begin_date, end_date, l.service_id\n' +
             'from waste_traffics_log l\n' +
             'left join services s on l.service_id = s.id and l.state = 1\n' +
             'where org_id = $1\n' +
