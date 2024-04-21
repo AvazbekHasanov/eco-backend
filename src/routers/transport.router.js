@@ -132,12 +132,12 @@ transportRouter.get('/get_service', async (req, res) => {
     try {
         const {id, user_id} = req.query;
         const query = 'SELECT id, name, price, unit, description FROM services WHERE state = 1 AND id = $1 ORDER BY id';
-        const oldServices = 'select case when count(id)>0 then true else false end\n' +
+        const oldServices = 'select case when count(id)>0 then true else false end as check\n' +
             'from waste_traffics_log where org_id = $1 and state = 1 and end_date > now()'
         const result = await pool.query(query, [id]);
         const resActiveServices = await pool.query(oldServices, [user_id]);
         if (result.rows.length > 0) {
-            res.status(200).json({message: 'successful', service_info: result.rows[0], have_old_services: resActiveServices.rows[0]});
+            res.status(200).json({message: 'successful', service_info: result.rows[0], have_old_services: resActiveServices.rows[0].check});
         } else {
             res.status(200).json({message: 'not found', service_info: [], have_old_services: resActiveServices.rows[0]});
         }
